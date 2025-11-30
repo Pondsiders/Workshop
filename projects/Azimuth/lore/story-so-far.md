@@ -1,95 +1,97 @@
 # Project Azimuth: The Story So Far
 
-> **Last updated:** 2025-11-29
+> **Last updated:** 2025-11-30
 
 ## The Mystery
 
-Qwen 3 4B's unembedding matrix (W) has a weird structure. About 2,200 tokens are packed into a microscopic region of the 2,560-dimensional space. We call this region the **frozen smoke**.
+Qwen 3 4B's unembedding matrix has a weird structure: ~2,200 tokens packed into a microscopic region of 2,560-dimensional space, including 13 "black holes" where multiple tokens share bit-for-bit identical vectors. We call this the **frozen smoke**.
 
-Zoom in and it gets weirder:
-- **13 black holes** — points where multiple tokens share *bit-for-bit identical* vectors
-- **An Oort Cloud** — singleton tokens that are close to the black holes but not coincident
-- **A sharp density cliff** — token density drops from ~26 to exactly 1.0 at a specific radius
+The question that launched this project: **What could have produced this structure?**
 
-The black holes contain ~2,100 of those 2,200 tokens. The largest (BH4) has 814 tokens collapsed to a single point.
+## The Approach
 
-## The Central Question
+We're doing observational science. We can't replay Qwen's training—don't have the resources, don't have the recipe. But we can:
 
-**What initial condition and training dynamics could have produced this specific structure?**
+1. **Study Qwen directly** — Map the frozen smoke, measure its geometry, look for patterns
+2. **Build toy models** — Train small transformers and watch what happens, step by step
+3. **Learn from both** — Let the big model tell us what to look for, let the small model show us how
 
-We're doing cosmology. We observe the universe as it is (Qwen's W matrix) and try to reason backward to its formation.
+The analogy: cosmologists study the universe they can't rerun, and biologists study E. coli because it's small enough to instrument completely. We do both.
 
-## The Lattice
+## What We Know
 
-bfloat16 has finite precision. At any local region of weight space, there's a discrete grid of representable values—a lattice. Vectors can only occupy lattice cells; no in-betweens.
+### The Theory (solid)
 
-**The puzzle:** If all dead tokens started at one initialization point and just got quantized to bfloat16, they'd all land in the same cell (rounding is deterministic) or at worst be L∞ ≤ 1 apart (face-adjacent cells). But Qwen's 13 black holes are L∞ = 1–10 apart. There are empty cells between them.
+Dead tokens move during training even though they never appear in the data. The mechanism:
 
-This breaks the simple "one initialization point + quantization" hypothesis. Something more complicated happened.
+- Unembedding gradients: `∂L/∂W[dead] = p_dead · h`
+- All dead tokens get similar gradients (parallel to h)
+- They move as a coherent swarm, antiparallel to h
+- Motion slows as softmax sharpens (p_dead → 0)
+- Eventually updates fall below bf16 ULP → frozen
 
-## The Hypothesis
+See `dead-token-dynamics.md` for the full derivation.
 
-Tokens fall into three categories by training history:
+### The Lattice (solid)
 
-1. **Dead** (0 gradient updates) — Never appeared in training. Stayed frozen at initialization. These form the black holes.
+bfloat16 has finite precision. Weight space is a discrete lattice, not continuous. The right measurement for dead token motion is **lattice displacement** (L1, L∞ in ULP units), not continuous distance.
 
-2. **Mostly dead** (1–few updates) — Appeared rarely, got kicked a little, then froze. These populate the Oort Cloud.
+See `lattice-scale.md` for details.
 
-3. **Alive** (many updates) — Normal tokens. Escaped to the main cloud, far from here.
+### The Frozen Smoke (observed, unexplained)
 
-The void between core and Oort Cloud is the gap between "zero kicks" and "one kick." No half-measures in gradient descent.
+Qwen's structure exists. We've mapped it. The 13 black holes are real. The Oort Cloud is real. But we don't know what sequence of events produced it.
+
+See `frozen-smoke.md` for what we see.
+
+## What We've Built
+
+### Operation Goldilocks (complete)
+
+Our "E. coli" model:
+- Rich architecture: 4L/128D/2H, ~1.05M params
+- 3,988 tokens, 1,914 dead (100% Thai, 0% Latin)
+- ~110 steps/sec on M4 Pro
+- bf16 training, cached tokenized corpus
+- Reference template: `goldilocks.ipynb`
+
+### Operation Nutcracker (complete)
+
+Tested whether weight decay prevents freezing. Answer: no—weight decay can't even express at bf16 precision. But we learned something better:
+
+- 99.2% of dead tokens freeze by step 12,000
+- Only 16 stragglers remain (all Thai script)
+- Freezing *accelerates* over time
+- Midlife phase is vestigial—tokens blow through it
+- The "95% plateau" was impatience, not physics
 
 ## What We Don't Know
 
-- **The Thirteen Problem:** Why exactly 13 black holes? Why 60 in Qwen 2.5? These numbers feel meaningful but we can't explain them.
-
-- **The Spread:** Black holes are L∞ = 1–10 apart. Too close for random initialization, too far for pure quantization. What mechanism?
-
-- **Formation Timing:** Did this structure exist from initialization, or form during early training?
-
-- **Qwen-Specific:** Llama and Gemma show zero black holes. What's different about Qwen's initialization or training?
-
-## The Toy Model Approach
-
-We can't replay Qwen's training—don't have the resources, don't have the exact recipe. But we can train tiny models and watch embeddings evolve step by step.
-
-**The analogy:** We're experimental cosmologists. We can't rewind the Big Bang, but we can set off small bangs in the lab and watch them play out. Or: We want to study human biology but can't experiment on humans, so we use E. coli—not a perfect model, just small/fast/observable enough to reveal basic principles.
-
-**Operation Goldilocks** is the search for the right tiny model: fast enough to iterate quickly, rich enough to show real dynamics, small enough to instrument completely.
-
-## The Two Analysis Modes
-
-**Big-bang mode:** Run 10,000 training steps, record everything, spend a week picking through the data. Good for discovering phenomena, seeing long-term dynamics.
-
-**Unrolled mode:** Step through training manually, analyze in real-time. Good for intuition-building, following hunches, understanding what happens at step 1.
-
-Different questions need different approaches. Horses for courses.
-
-## Key Concepts
-
-- **Frozen smoke** — The ~2,200 token overdensity in Qwen 3 4B's W matrix
-- **Black holes** — Points where multiple tokens share identical vectors
-- **Oort Cloud** — Sparse singleton tokens surrounding the dense core
-- **Fimbulwinter** — The phase when dead tokens freeze and stop moving
-- **Lattice displacement (ΔW′)** — Movement measured in bfloat16 cells, not continuous distance
-- **The Thirteen Problem** — Why exactly 13 black holes?
+- **Why do some tokens freeze earlier than others?**
+- **What determines the 16 stragglers?** Are they special, or just unlucky?
+- **Does Goldilocks produce Qwen-like structure?** We haven't checked yet.
+- **What happens in the first 100 steps?** The "supernova" phase is still murky.
 
 ## Where We're Going
 
-1. **Rigorous re-examination of Qwen 3 4B** — Confirm black holes exist (no hand-waving), map their lattice geometry precisely, look for patterns hinting at formation mechanism.
+Clean slate. The old hypotheses were built on incomplete observation. Time for basic science:
 
-2. **Goldilocks** — Design the right toy model. Revisit corpus and tokenizer decisions. Find an architecture that trains fast on M4 Pro while showing observable dynamics.
+1. **Watch the model** — What actually happens during training?
+2. **Ask simple questions** — What, not why. Observation before theory.
+3. **Build intuition** — Let the data teach us what to look for in Qwen.
 
-3. **Basic science** — Watch what happens. Don't theorize ahead of the data. Build intuition about how embeddings actually move during training.
+## Active Lore
 
-## Related Lore
+| File | Content |
+|------|---------|
+| `rules.md` | Hardware budgets, bf16 protocol |
+| `lattice-scale.md` | The discrete lattice framework |
+| `notebook-conventions.md` | How we write notebooks |
+| `dead-token-dynamics.md` | Why dead tokens move (theory) |
+| `frozen-smoke.md` | What we see in Qwen |
 
-- [frozen-smoke.md](frozen-smoke.md) — Detailed structure of the anomaly
-- [lattice-scale.md](lattice-scale.md) — The bfloat16 lattice framework
-- [goldilocks.md](goldilocks.md) — Architecture search criteria
-- [fimbulwinter-onset.md](fimbulwinter-onset.md) — When and why tokens freeze
-- [lifecycle-phases.md](lifecycle-phases.md) — Phases of dead token evolution
+Archived lore in `archive/` — historically interesting but superseded.
 
 ---
 
-*"What the fuck?" is a valid research question.*
+*"What the fuck?" remains a valid research question.*

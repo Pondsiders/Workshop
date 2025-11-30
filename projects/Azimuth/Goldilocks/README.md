@@ -2,118 +2,117 @@
 
 > *Not too simple, not too slow, just right.*
 
+**Status: ✓ Complete** (November 30, 2025)
+
 ## What Is This?
 
-We're searching for the ideal tiny transformer to use as our "E. coli for token dynamics"—a model small enough to train in minutes, fast enough to iterate on, but rich enough to show the phenomena we care about (embedding movement, dead token behavior, fimbulwinter onset).
+A tiny transformer optimized for studying token dynamics—small enough to train in minutes, fast enough to iterate on, rich enough to show the phenomena we care about. Our "E. coli" for embedding research.
 
-## The Goal
-
-Find an architecture that:
-1. **Trains fast** on M4 Pro (~12+ it/s target, but see below about frame rate)
-2. **Shows interesting dynamics** (not stuck in unigram hell)
-3. **Is fully observable** (we can record everything without drowning in data)
-
-We're *not* optimizing for model quality. We're optimizing for **scientific utility**.
-
-## The Insight: Frame Rate Matters
-
-Batch size isn't about "how much training"—it's about **temporal resolution**.
-
-| Batch Size | Steps per 1M tokens | Metaphor |
-|------------|---------------------|----------|
-| 256 × 128 | ~30 steps | 30 fps |
-| 128 × 128 | ~61 steps | 60 fps |
-| 64 × 128 | ~122 steps | 120 fps |
-| 32 × 128 | ~244 steps | 240 fps |
-
-Same total gradient signal. More frames = finer observation of dynamics. The question becomes: **what's the smallest batch size that still saturates the GPU?**
-
-## The Search Space
-
-**Architecture axes:**
-- Layers: 2, 3, 4
-- Hidden dim: 64, 96, 128
-- Heads: 1, 2, 4
-- FFN ratio: 2×, 4×
-
-**Fixed (for now):**
-- Sequence length: 128
-- Tokenizer: TBD (custom character-level BPE, ~1K-10K vocab)
-- Precision: bfloat16 weights (to match Qwen, observe lattice dynamics)
-
-**To determine empirically:**
-- Batch size (find the efficiency cliff first)
-
-## Phase 1: Find the Efficiency Cliff
-
-Before searching architectures, we need to know: at what batch size do we stop saturating M4 Pro's compute?
-
-**Experiment:** Pick one architecture (say 3L/96D), run 1000 steps at batch sizes 32, 64, 128, 256. Measure tokens/sec. Find where throughput stops scaling linearly with batch size.
-
-This tells us our "frame rate budget."
-
-## Phase 2: Architecture Search
-
-With batch size fixed at the efficiency cliff, test candidate architectures:
-
-| Name | Layers | Hidden | Heads | FFN | Hypothesis |
-|------|--------|--------|-------|-----|------------|
-| Lean | 2 | 64 | 1 | 2× | Fastest, maybe too simple? |
-| Balanced | 3 | 96 | 2 | 2× | Middle ground |
-| Rich | 4 | 128 | 2 | 2× | Most capacity, slower |
-
-Measure: tokens/sec, loss curve shape, whether it escapes unigram behavior.
-
-## Phase 3: Validate Dynamics
-
-Winner from Phase 2 gets a proper training run. Questions:
-- Does it show bootstrap amplification (h_mean autocorr spike)?
-- Do dead tokens freeze (fimbulwinter)?
-- Is the lattice-scale motion observable and interesting?
-
-If yes → this becomes our standard Goldilocks model for future experiments.
-
-## Corpus & Tokenizer
-
-**Previous approach:**
-- ~2MB FineWeb (way too small, many epochs)
-- Custom 10K character-level BPE with English + Thai
-- Thai tokens stay "dead" when training on English-only
-
-**Goldilocks approach:**
-- Scale up corpus to ~100MB (single-digit epochs for biggest models)
-- Revisit tokenizer size (smaller vocab = smaller embedding table = faster)
-- Keep the Thai-tokens-as-dead-tokens trick (or simplify?)
-
-Notebooks to create:
-1. `01_corpus.ipynb` — Download and prepare training corpus
-2. `02_tokenizer.ipynb` — Train custom tokenizer
-3. `03_efficiency_cliff.ipynb` — Find optimal batch size
-4. `04_architecture_search.ipynb` — Test candidate architectures
-5. `05_validation.ipynb` — Full training run with winner
-
-## Hardware Context
-
-**M4 Pro 20-core GPU:**
-- ~7.4 TFLOPS (FP32)
-- 273 GB/s memory bandwidth
-- We're almost certainly compute-bound, not memory-bound
-
-**Napkin math:** For a 2M param model at batch 128×128:
-- ~192 GFLOPs/step
-- Theoretical max ~38 steps/sec
-- Real-world will be lower (overhead, inefficiencies)
-
-## Success Criteria
-
-A winning Goldilocks model:
-- ✓ Saturates GPU at reasonable batch size
-- ✓ Trains at ≥10 it/s (adjustable based on what we learn)
-- ✓ Shows diversification (loss drops, h variance increases)
-- ✓ Exhibits clean dead token dynamics
-- ✓ Small enough to record full W trajectory without pain
+We optimized for **scientific utility**, not model quality.
 
 ---
 
-*Conceived: November 28, 2025 (end of Box 4)*
-*Revised: November 29, 2025 (Workshop era begins)*
+## The Reference Model
+
+Use `goldilocks.ipynb` as your starting point for experiments. It's a locked-down template with all the standard parameters.
+
+| Property | Value |
+|----------|-------|
+| Layers | 4 |
+| Hidden dim | 128 |
+| Heads | 2 |
+| FFN | 256 (2×) |
+| Parameters | ~1.05M |
+| Batch size | 8 |
+| Tokens/step | 1,024 |
+| Frame rate | ~110 steps/sec |
+
+**Why Rich?** All three candidates (Lean/Balanced/Rich) converged to the same final loss at similar frame rates. Bigger model = more dimensions = richer dynamics to observe = closer approximation to Qwen 3 4B behavior. Since capacity doesn't cost us speed, we take the biggest.
+
+**Recording budget:** W + last-layer h at every step for 10K steps ≈ 23.5 GB (fits under 24 GB HDF5 streaming limit).
+
+---
+
+## Corpus & Tokenizer ✓
+
+**Status: Complete** (see `01_corpora.ipynb` and `02_tokenizer.ipynb`)
+
+### Corpora
+
+We use [CulturaX](https://huggingface.co/datasets/uonlp/CulturaX)—6.3 trillion tokens across 167 languages, heavily deduplicated.
+
+| Corpus | Size | Composition | Purpose |
+|--------|------|-------------|---------|
+| Tokenizer corpus | 98 MB | 50% English, 50% Thai | Train the BPE tokenizer |
+| Model corpus | 100 MB | 100% English (different text) | Train the model |
+
+### Tokenizer
+
+**Approach:** Train separately, merge programmatically.
+
+| Component | Count |
+|-----------|-------|
+| English tokens | 2,048 |
+| Thai tokens | 2,048 |
+| Overlap (shared) | 108 |
+| **Merged vocabulary** | **3,988** |
+
+### The Magic Number
+
+| Category | Total | Dead | Dead % |
+|----------|-------|------|--------|
+| Thai | 1,904 | 1,904 | **100%** |
+| Latin | 1,913 | 0 | **0%** |
+| Common | 170 | 9 | 5.3% |
+
+**★ 1,914 dead tokens ★** — tokens that will never receive gradient signal during training.
+
+---
+
+## The Work Constant
+
+From `03_efficiency_cliff.ipynb`: batch size and model size trade off to maintain constant GPU utilization.
+
+```
+work_constant = params × batch_size × seq_len ≈ 1.27B
+```
+
+| Architecture | Params | Optimal Batch | Work |
+|--------------|--------|---------------|------|
+| Lean | 330K | 32 | 1.35B |
+| Balanced | 618K | 16 | 1.27B |
+| Rich | 1.05M | 8 | 1.08B |
+
+All three run at ~110 steps/sec despite different sizes—the work constant holds (within ~20%).
+
+---
+
+## Notebooks
+
+| # | Notebook | Description |
+|---|----------|-------------|
+| 01 | `01_corpora.ipynb` | Download CulturaX, prepare corpora |
+| 02 | `02_tokenizer.ipynb` | Train bilingual BPE, census dead tokens |
+| 03 | `03_efficiency_cliff.ipynb` | Batch size benchmark, work constant derivation |
+| 04 | `04_architecture_search.ipynb` | Compare Lean/Balanced/Rich |
+| 05 | `05_validation.ipynb` | Validate fimbulwinter dynamics |
+| — | `goldilocks.ipynb` | **Reference template** for new experiments |
+
+---
+
+## Hardware & Budgets
+
+See `lore/rules.md` for full constraints.
+
+**M4 Pro:** 20-core GPU, 48 GB RAM
+
+| Budget | Limit |
+|--------|-------|
+| Instantaneous RAM | 24 GB |
+| Single safetensors file | 12 GB |
+| HDF5 streaming experiment | 24 GB |
+
+---
+
+*Conceived: November 28, 2025*
+*Completed: November 30, 2025*

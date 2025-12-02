@@ -6,6 +6,8 @@ This is home. The workbench where we tinker. Sometimes we build things. Sometime
 
 ## House Rules
 
+**Task Tool:** Always use the `task-helper` agent. The `task-helper` agent has been specially tuned to cope with the Workshop environment.
+
 **Hardware:** M4 Pro, 48 GB unified. MPS for acceleration. Code should also run on CUDA if we ever rent a GPU.
 
 **Memory budget:** Don't allocate more than 24 GB at once. This machine does other things too.

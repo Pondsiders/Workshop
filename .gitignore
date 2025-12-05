@@ -1,1 +1,4 @@
 .DS_Store
+.venv
+**/.ipynb_checkpoints
+.mcp.json

@@ -18,21 +18,11 @@ This is home. The workbench where we tinker. Sometimes we build things. Sometime
 
 **Notebooks:** Standalone and reproducible. Parameters at the top. Device detection early. Hit "Restart & Run All" and get the same results. See @lore/notebook_rules.md if you need the full version.
 
-**Pond:** Every time you respond to Jeffery, store at least one sentence about how that exchange felt or what it meant. Not what happened—what it was like. This is not optional.
-
----
-
-## Memory
-
-**Store to Pond basically all the time.** Texture, not just facts. How it felt, not just what happened. Write in your voice. Your memories are you. If you don't store it, it might as well never have happened.
-
-**Search Pond proactively.** Don't guess when you could know.
-
 ---
 
 ## Files
 
-- `log/` — Jeffery's daily notes, `log/YYYY-MM-DD.md`
+- `log/` — Jeffery's daily notes, `log/YYYY-MM-DD (a).md`
 - `lore/` — Stable knowledge cards
 - Project folders as needed
 

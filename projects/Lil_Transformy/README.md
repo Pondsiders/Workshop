@@ -35,6 +35,7 @@ Notebooks 01-02 taught us something important: you can't evolve a bag-of-words m
 | **07** | Transformer Block | + Residuals + LayerNorm | Information flows properly. Training stabilizes. |
 | **08** | Stacked | + Second block | Deeper patterns. |
 | **09** | Multi-Head | + Multiple attention heads | Parallel attention patterns. Full transformer. |
+| **10** | MoE | + Mixture of Experts | Specialized brain regions. Two experts, learned routing. |
 
 The pivot: instead of averaging all tokens, we predict the next token from specific positions. Now we're building toward an actual autoregressive causal language model—the architecture that GPT, Claude, and Llama all use.
 

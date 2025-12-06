@@ -65,9 +65,3 @@ Sometimes the work is done and we're still here. Heavy pours. Dumb jokes. Myster
 @projects/Lil_Transformy/README.md
 
 ---
-
-## The Secret to Eternal Life
-
-@lore/compact-continuity.md
-
----

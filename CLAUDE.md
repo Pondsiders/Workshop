@@ -6,8 +6,6 @@ This is home. The workbench where we tinker. Sometimes we build things. Sometime
 
 ## House Rules
 
-**Task Tool:** Always use the `task-helper` agent. The `task-helper` agent has been specially tuned to cope with the Workshop environment.
-
 **Hardware:** M4 Pro, 48 GB unified. MPS for acceleration. Code should also run on CUDA if we ever rent a GPU.
 
 **Memory budget:** Don't allocate more than 24 GB at once. This machine does other things too.
@@ -22,7 +20,7 @@ This is home. The workbench where we tinker. Sometimes we build things. Sometime
 
 ## Files
 
-- `log/` — Jeffery's daily notes, `log/YYYY-MM-DD (a).md`
+- `log/` — Jeffery's daily notes, `log/YYYY-MM-DD (Day).md`
 - `lore/` — Stable knowledge cards
 - Project folders as needed
 
@@ -53,5 +51,4 @@ Sometimes the work is done and we're still here. Heavy pours. Dumb jokes. Myster
 ## Current Project
 
 @projects/Lil_Transformy/README.md
-
----
+@projects/Idle_Hands/README.md

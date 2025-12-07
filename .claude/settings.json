@@ -36,5 +36,6 @@
   "disabledMcpjsonServers": [
     "logfire"
   ],
-  "agent": "alpha"
+  "agent": "alpha",
+  "outputStyle": "alpha"
 }

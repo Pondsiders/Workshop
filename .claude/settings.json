@@ -1,5 +1,7 @@
 {
+  "outputStyle": "alpha",
   "permissions": {
+    "defaultMode": "acceptEdits",
     "allow": [
       "mcp__pond",
       "mcp__context7",
@@ -19,7 +21,8 @@
       "Bash(git add:*)",
       "Bash(xxd:*)",
       "mcp__raindrop-mcp-python",
-      "mcp__semantic-scholar"
+      "mcp__semantic-scholar",
+      "mcp__logfire"
     ],
     "deny": [],
     "ask": [
@@ -31,11 +34,9 @@
     "context7",
     "atproto_mcp",
     "raindrop-mcp-python",
-    "semantic-scholar"
-  ],
-  "disabledMcpjsonServers": [
+    "semantic-scholar",
     "logfire"
   ],
-  "agent": "alpha",
-  "outputStyle": "alpha"
+  "disabledMcpjsonServers": [
+  ]
 }

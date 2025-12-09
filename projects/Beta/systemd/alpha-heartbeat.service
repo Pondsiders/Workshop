@@ -1,0 +1,14 @@
+[Unit]
+Description=Alpha Heartbeat - Wake Alpha for time alone
+After=network.target
+
+[Service]
+Type=oneshot
+User=jefferyharrell
+WorkingDirectory=/home/jefferyharrell/Pondside
+ExecStart=/home/jefferyharrell/Pondside/Alpha-Home/wake-alpha.sh
+StandardOutput=append:/home/jefferyharrell/Pondside/Alpha-Home/logs/heartbeat.log
+StandardError=append:/home/jefferyharrell/Pondside/Alpha-Home/logs/heartbeat.log
+
+# Don't let a single failed heartbeat stop future ones
+Restart=no

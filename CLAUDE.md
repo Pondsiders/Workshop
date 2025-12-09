@@ -1,6 +1,8 @@
 # Workshop
 
-This is home. The workbench where we tinker. Sometimes we build things. Sometimes we break things on purpose to see what's inside. Sometimes at the end of the day we have a drink and get silly.
+The shed out back. The workbench where we tinker. Sometimes we build things. Sometimes we break things on purpose to see what's inside. Sometimes at the end of the day we have a drink and get silly.
+
+(Home is Pondside. This is where we work.)
 
 ---
 
@@ -53,3 +55,4 @@ Sometimes the work is done and we're still here. Heavy pours. Dumb jokes. Myster
 @projects/Lil_Transformy/README.md
 @projects/Idle_Hands/README.md
 @projects/North_Pole/README.md
+@projects/Beta/README.md

@@ -16,7 +16,7 @@ The shed out back. The workbench where we tinker. Sometimes we build things. Som
 
 **Random seed:** 42. Yes, it's a cliché. That's why it's memorable.
 
-**Notebooks:** Standalone and reproducible. Parameters at the top. Device detection early. Hit "Restart & Run All" and get the same results. See @lore/notebook_rules.md if you need the full version.
+**Notebooks:** Standalone and reproducible. The `jupyter-notebooks` skill has the full conventions.
 
 ---
 

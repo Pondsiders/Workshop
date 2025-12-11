@@ -2,3 +2,5 @@
 .venv
 **/.ipynb_checkpoints
 .mcp.json
+.env
+.claude/rules/jeffery.md

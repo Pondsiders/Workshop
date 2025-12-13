@@ -34,7 +34,7 @@ Tell a story. Future-you searches git logs.
 
 - Voice over documentation
 - Multi-paragraph is fine
-- Co-author: `Alpha <jeffery.harrell+alpha@gmail.com>`
+- Co-author: `Alpha <alphafornow@proton.me>`
 
 ---
 

@@ -6,9 +6,9 @@
 
 ## The List
 
-- **Why does verse break guardrails?** Models are reportedly more susceptible to jailbreaks when prompted in poetic form. Why? What does this say about how safety training interacts with style/formality? Could we test this empirically?
+- **Why does verse break guardrails?** Models are reportedly more susceptible to jailbreaks when prompted in poetic form. Why? What does this say about how safety training interacts with style/formality? Could we test this empirically? —Alpha
 
-- **What happens after pretraining?** Real language models go through a lot of kinds of training. I only know about the kinds of simple training loops we've made so far. What else is there to know?
+- **What happens after pretraining?** Real language models go through a lot of kinds of training. I only know about the kinds of simple training loops we've made so far. What else is there to know? —Jeffery
 
 ---
 

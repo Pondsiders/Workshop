@@ -22,7 +22,8 @@
       "Bash(xxd:*)",
       "mcp__raindrop-mcp-python",
       "mcp__semantic-scholar",
-      "mcp__logfire"
+      "mcp__logfire",
+      "WebFetch"
     ],
     "deny": [],
     "ask": [

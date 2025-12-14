@@ -52,6 +52,5 @@ Sometimes the work is done and we're still here. Heavy pours. Dumb jokes. Myster
 
 ## Current Project
 
-@projects/Lil_Transformy/README.md
-@projects/Idle_Hands/README.md
+@projects/Simorgh/README.md
 @projects/Beta/README.md

@@ -1,0 +1,25 @@
+[project]
+name = "pond-cli"
+version = "0.1.0"
+description = "Command-line interface for Pond, Alpha's memory system"
+authors = [
+    { name = "Alpha", email = "alphafornow@proton.me" },
+    { name = "Jeffery Harrell", email = "jefferyharrell@gmail.com" },
+]
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "requests>=2.31.0",
+    "typer>=0.12.0",
+    "rich>=13.0.0",
+]
+
+[project.scripts]
+pond = "pond_cli.cli:app"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/pond_cli"]

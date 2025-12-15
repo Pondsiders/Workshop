@@ -23,3 +23,8 @@ dependencies = [
     "transformers>=4.57.3",
     "unicodedataplus>=16.0.0.post1",
 ]
+
+[tool.uv.workspace]
+members = [
+    "projects/Alpha-Memory-Restoration",
+]

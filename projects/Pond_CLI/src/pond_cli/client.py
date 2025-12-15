@@ -37,21 +37,21 @@ class PondClient:
     def _post(self, endpoint: str, data: dict[str, Any]) -> dict[str, Any]:
         """Make a POST request to the API."""
         url = f"{self.base_url}/api/v1/{endpoint}"
-        response = requests.post(url, json=data, headers=self._headers(), timeout=30)
+        response = requests.post(url, json=data, headers=self._headers(), timeout=60)
         response.raise_for_status()
         return response.json()
 
     def _get(self, endpoint: str, params: dict[str, Any] | None = None) -> dict[str, Any]:
         """Make a GET request to the API."""
         url = f"{self.base_url}/api/v1/{endpoint}"
-        response = requests.get(url, params=params, headers=self._headers(), timeout=30)
+        response = requests.get(url, params=params, headers=self._headers(), timeout=60)
         response.raise_for_status()
         return response.json()
 
     def _get_no_auth(self, endpoint: str) -> dict[str, Any]:
         """Make a GET request without auth (for health check)."""
         url = f"{self.base_url}/api/v1/{endpoint}"
-        response = requests.get(url, timeout=30)
+        response = requests.get(url, timeout=60)
         response.raise_for_status()
         return response.json()
 

@@ -52,6 +52,7 @@ Sometimes the work is done and we're still here. Heavy pours. Dumb jokes. Myster
 
 ## Current Projects
 
+@projects/Pondside/README.md
 @projects/Simorgh/README.md
 @projects/Beta/README.md
 @projects/Presearch/README.md

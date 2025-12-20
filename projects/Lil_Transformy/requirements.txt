@@ -1,0 +1,7 @@
+torch
+numpy
+matplotlib
+tqdm
+datasets
+transformers
+ipykernel

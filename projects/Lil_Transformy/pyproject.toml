@@ -1,0 +1,15 @@
+[project]
+name = "lil-transformy"
+version = "0.1.0"
+description = "Building transformers from scratch, one concept at a time"
+requires-python = ">=3.12"
+dependencies = [
+    "torch",
+    "numpy",
+    "matplotlib",
+    "tqdm",
+    "datasets",
+    "transformers",
+    "ipykernel",
+    "ipywidgets>=8.1.8",
+]

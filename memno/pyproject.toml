@@ -12,6 +12,7 @@ dependencies = [
 
 [project.scripts]
 memno = "memno.hook:main"
+memno-dispatcher = "memno.dispatcher:main"
 
 [build-system]
 requires = ["hatchling"]
